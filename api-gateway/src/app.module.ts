@@ -15,10 +15,15 @@ import { ConfigService } from './config/services/config.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Config, ConfigSchema } from './config/schemas/config.schema';
 import { AuthClientService } from './auth/services/auth.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/school'), // Replace with your MongoDB URI
+    ConfigModule.forRoot({
+      isGlobal: true, // Makes ConfigModule global, accessible in any module
+      envFilePath: '.env', // Optional, defaults to .env in the root directory
+    }),
+    MongooseModule.forRoot(process.env.MONGO_URI), // Replace with your MongoDB URI
     MongooseModule.forFeature([{ name: Config.name, schema: ConfigSchema }]),
     JwtModule.register({
     secret: 'OK1', // Replace with environment variable in production

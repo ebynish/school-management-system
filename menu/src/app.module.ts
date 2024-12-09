@@ -4,15 +4,21 @@ import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Menu, MenuSchema } from './schemas/menu.schema';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017/school'),
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Makes ConfigModule global, accessible in any module
+      envFilePath: '.env', // Optional, defaults to .env in the root directory
+    }),
+    MongooseModule.forRoot(process.env.MONGO_URI),
   MongooseModule.forFeature([{ name: Menu.name, schema: MenuSchema }]),
   ClientsModule.register([
   {
     name: 'MENU_SERVICE',
     transport: Transport.TCP,
-    options: { host: 'localhost', port: 3011 },
+    options: { host: 'localhost', port: Number(`${process.env.MENU_PORT_INTERNAL}`) },
     },
   ])
 ],

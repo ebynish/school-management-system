@@ -20,7 +20,7 @@ export class StudentService {
   ) {
     this.clientUser = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3002 },
+      options: { host: 'localhost', port: Number(`${process.env.AUTH_PORT_EXTERNAL}`) },
     });
 
     // Access the "applicants" collection directly

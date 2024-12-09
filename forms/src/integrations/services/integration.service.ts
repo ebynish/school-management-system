@@ -14,7 +14,7 @@ export class IntegrationsService {
     ) {
       this.client = ClientProxyFactory.create({
         transport: Transport.TCP,
-        options: { host: 'localhost', port: 3222 }, // Adjust host and port as necessary
+        options: { host: 'localhost', port: Number(`${process.env.EMAIL_PORT_EXTERNAL}`) }, // Adjust host and port as necessary
       });
   
 

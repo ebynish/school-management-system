@@ -13,11 +13,11 @@ export class AuthClientService {
   constructor(@InjectConnection() private readonly connection: Connection) {
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3002 }, // Adjust host and port as necessary
+      options: { host: 'localhost', port: Number(`${process.env.AUTH_PORT_EXTERNAL}`) }, // Adjust host and port as necessary
     });
     this.emailClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3222 }, // Adjust host and port as necessary
+      options: { host: 'localhost', port: Number(`${process.env.EMAIL_PORT_EXTERNAL}`) }, // Adjust host and port as necessary
     });
   }
 
@@ -46,9 +46,9 @@ export class AuthClientService {
     const response = await firstValueFrom(
       this.client.send({ cmd: 'forgot-password' }, user)
     );
-    
+      
     if (response.data){
-      await firstValueFrom(this.emailClient.send({ cmd: 'notification' }, { data: { email: response.data.email, firstName: response.data.firstName, type: 'forgot', resetLink: `/reset-password/${response.resetToken}` }}))
+      firstValueFrom(this.emailClient.send({ cmd: 'notification' }, { data: { email: response.data.email, firstName: response.data.firstName, type: 'forgot', resetLink: `/reset-password/${response.resetToken}` }}))
     }
     return { statusCode: 200, message: 'Reset token set to email'}
     }catch(e){
@@ -57,14 +57,17 @@ export class AuthClientService {
   }
   
   async resetPassword(user:any): Promise<any>{
-    
+    try{
     const response = await firstValueFrom(
       this.client.send({ cmd: 'reset-password' }, user)
     );
     
     if (response.data)
-    await firstValueFrom(this.emailClient.send({ cmd: 'notification' }, {data: response.data, type: 'reset'}))
-    return response;
+    await firstValueFrom(this.emailClient.send({ cmd: 'notification' }, {data:{ email: response.data.email, firstName: response.data.firstName, type: 'reset'}}))
+    return { statusCode: 200, message: 'Password reset successful'}
+  }catch(e){
+    return { statusCode: 500, message: e}
+  }
   }
   async registerStudent(data:any): Promise<any>{
     const user = await this.connection.collection('transactions').findOne({ _id: new mongoose.Types.ObjectId(data) });

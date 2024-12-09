@@ -10,6 +10,9 @@ export class Template {
   title: string; // The title of the template (e.g., 'Admission Letter Template')
 
   @Prop({ required: true })
+  subject: string; // The title of the template (e.g., 'Admission Letter Template')
+
+  @Prop({ required: true })
   content: string; // The HTML or plain-text content of the template
 
   @Prop({ default: '' })

@@ -9,7 +9,7 @@ export class FormClientService {
     constructor() {
       this.client = ClientProxyFactory.create({
         transport: Transport.TCP,
-        options: { host: 'localhost', port: 3010 },
+        options: { host: 'localhost', port: Number(`${process.env.FORMS_PORT_EXTERNAL}`) },
       });
     }
 

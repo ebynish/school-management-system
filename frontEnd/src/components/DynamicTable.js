@@ -182,7 +182,7 @@ const DynamicTable = ({ apiUrl, source, headers, search, action, buttons = [] })
   
 
   return (
-    <Box width="100%" px={4}>
+    <Box width="100%" p={4} bg="white" borderRadius={10} boxShadow={'sm'}>
       {search && (
         <Stack direction={{ base: "column", md: "row" }} mb={4} spacing={2} align="center" justify="flex-end">
           <Input

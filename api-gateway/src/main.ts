@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
@@ -27,8 +26,14 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+  let port = process.env.API_PORT_INTERNAL || 3000;
 
-  await app.listen(3000);
+  try {
+    await app.listen(port);
+    console.log(`Server is running on http://localhost:${port}`);
+  } catch (error) {
+    console.error('Error starting the server:', error);
+  }
 }
 
 bootstrap();

@@ -37,8 +37,11 @@ export class User {
   @Prop({ default: false })
   isActive: boolean;
 
-  @Prop({ maxlength: 160 })
-  bio: string;
+  @Prop()
+  resetPasswordToken: string
+  
+  @Prop()
+  resetPasswordExpires: Date
 
 }
 

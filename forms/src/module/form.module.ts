@@ -18,7 +18,7 @@ import { RemitaService } from 'src/integrations/services/remita.service';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/school'),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     MongooseModule.forFeature([{ name: Form.name, schema: FormSchema }, 
       { name: AuditTrail.name, schema: AuditTrailSchema },
       { name: ApprovalRule.name, schema: ApprovalRuleSchema },

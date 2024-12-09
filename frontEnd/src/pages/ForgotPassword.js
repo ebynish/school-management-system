@@ -24,9 +24,9 @@ const ForgotPasswordPage = ({ config }) => {
     e.preventDefault();
     try {
       const response = await update("auth/forgot-password", { email });
-
+      console.log(response)
       // Handle unexpected `stack` or non-standard responses
-      if (response?.stack) {
+      if (response?.stack || null) {
         console.error("Unexpected error object:", response);
         toast({
           title: "Error",

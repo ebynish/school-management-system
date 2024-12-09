@@ -9,7 +9,7 @@ export class MenuClientService {
     constructor() {
       this.client = ClientProxyFactory.create({
         transport: Transport.TCP,
-        options: { host: 'localhost', port: 3011 },
+        options: { host: 'localhost', port: Number(`${process.env.MENU_PORT_EXTERNAL}`) },
       });
     }
 

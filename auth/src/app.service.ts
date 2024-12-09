@@ -75,46 +75,46 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.userService.findOneByEmail(email);
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-
-    const resetToken = this.generateResetToken();
-    const hashedResetToken = this.jwtService.sign({ resetToken }, { expiresIn: '1h' });
-
-    
-    // Save the JWT reset token to user record
-    await this.userService.saveResetPasswordToken(user._id, hashedResetToken);
-
-    // Normally, you'd send the plain resetToken via email, not the JWT token itself
-    return { resetToken: hashedResetToken, data: user };
+  const user = await this.userService.findOneByEmail(email);
+  if (!user) {
+    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
-  // Reset password using reset token
-  async resetPassword({ token, newPassword }: { token: string, newPassword: string }) {
-    try {
-      console.log(token, newPassword)
-      const decoded = this.jwtService.verify(token);
-      console.log(decoded)
+  const plainResetToken = this.generateResetToken();
+  const hashedResetToken = crypto.createHash('sha256').update(plainResetToken).digest('hex');
+  
+  // Save hashed token and expiration to user record
+  
+  await this.userService.saveResetPasswordToken(user._id, hashedResetToken);
 
-      const user = await this.userService.findOneByResetPasswordToken(decoded.resetToken);
-      if (!user) {
+  // Normally, send the plain token via email, not the hashed version
+  // Example: await this.mailService.sendResetPasswordEmail(user.email, plainResetToken);
+
+  return { resetToken: plainResetToken, data: user };
+}
+
+  async resetPassword({ token, newPassword }: { token: string; newPassword: string }) {
+    try {
+      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+      const user = await this.userService.findOneByResetPasswordToken(hashedToken);
+  
+      if (!user || user.resetPasswordTokenExpiry < new Date()) {
         throw new HttpException('Invalid or expired reset token', HttpStatus.BAD_REQUEST);
       }
-
+  
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await this.userService.updatePassword(user._id, hashedPassword);
-
-      // Clear reset token after password change
+  
+      // Clear reset token and expiry after password change
       await this.userService.clearResetPasswordToken(user._id);
-
+  
       return { statusCode: 200, message: 'Password reset successfully', data: { email: user.email, firstName: user.firstName } };
     } catch (error) {
+      console.error('Error during password reset:', error);
       throw new HttpException('Invalid or expired reset token', HttpStatus.BAD_REQUEST);
     }
   }
-
+  
   // Change password (authenticated user)
   async changePassword({ userId, oldPassword, newPassword }: { userId: string, oldPassword: string, newPassword: string }) {
     const user = await this.userService.findOne(userId);

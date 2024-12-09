@@ -7,9 +7,9 @@ import { IntegrationsService } from 'src/integrations/services/integration.servi
 import { AuditService } from './audit.service';
 import { ApprovalRuleService } from './approval-rule.service';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { firstValueFrom, config, filter } from 'rxjs';
+import { firstValueFrom,  } from 'rxjs';
 import { ApprovalWorkflowService } from './approval-workflow.service';
-import { type } from 'os';
+
 
 @Injectable()
 export class FormService {
@@ -25,11 +25,11 @@ export class FormService {
   ) {  // Initialize TCP client to communicate with notification service
     this.clientUser = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3002 },
+      options: { host: 'localhost', port: Number(`${process.env.AUTH_PORT_EXTERNAL}`)},
     });
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3222 }, // Adjust host and port as necessary
+      options: { host: 'localhost', port: Number(`${process.env.EMAIL_PORT_EXTERNAL}`) }, // Adjust host and port as necessary
     });
 
   }

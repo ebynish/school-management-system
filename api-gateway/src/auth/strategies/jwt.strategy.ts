@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3002 }, // Adjust host and port as necessary
+      options: { host: 'localhost', port: Number(process.env.AUTH_PORT_EXTERNAL) }, // Adjust host and port as necessary)
     });
   }
 

@@ -9,7 +9,7 @@ export class UserClientService {
     constructor() {
       this.client = ClientProxyFactory.create({
         transport: Transport.TCP,
-        options: { host: 'localhost', port: 3002 },
+        options: { host: 'localhost', port: Number(`${process.env.AUTH_PORT_EXTERNAL}`) },
       });
     }
 

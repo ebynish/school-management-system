@@ -117,10 +117,11 @@ export class UserService {
   // Save reset password token for a user
   async saveResetPasswordToken(userId: string, resetToken: string): Promise<void> {
     try {
-      await this.userModel.findByIdAndUpdate(userId, {
+      let update = await this.userModel.updateMany({_id: userId}, {
         resetPasswordToken: resetToken,
         resetPasswordExpires: Date.now() + 3600000 // 1 hour expiration
-      }).exec();
+    }).exec();
+    console.log(update)
     } catch (error) {
       throw new InternalServerErrorException('Failed to save reset password token');
     }

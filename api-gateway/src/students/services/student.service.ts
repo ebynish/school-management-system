@@ -12,11 +12,11 @@ export class StudentService {
   constructor() {
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3002 },
+      options: { host: 'localhost', port: Number(`${process.env.AUTH_PORT_EXTERNAL}`)  },
     });
     this.client2 = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: 3002 },
+      options: { host: 'localhost', port: Number(`${process.env.STUDENT_PORT_EXTERNAL}`)  },
     });
   }
 
@@ -29,27 +29,27 @@ export class StudentService {
   }
 
   async generateAdmissionLetter(applicantNumber: string): Promise<any> {
-    return await firstValueFrom(this.client.send({ cmd: 'admission-letter' }, { applicantNumber }));
+    return await firstValueFrom(this.client2.send({ cmd: 'admission-letter' }, { applicantNumber }));
   }
 
   async getResults(data: any): Promise<any> {
-    return await firstValueFrom(this.client.send({ cmd: 'getResult' }, data));
+    return await firstValueFrom(this.client2.send({ cmd: 'getResult' }, data));
   }
 
   async calculateCGPA(data: any): Promise<any> {
-    return await firstValueFrom(this.client.send({ cmd: 'calculateCGPA' }, data));
+    return await firstValueFrom(this.client2.send({ cmd: 'calculateCGPA' }, data));
   }
 
   async getResultBySemester(studentId: string, semester: string): Promise<any> {
-    return await firstValueFrom(this.client.send({ cmd: 'getResultBySemester' }, { studentId, semester }));
+    return await firstValueFrom(this.client2.send({ cmd: 'getResultBySemester' }, { studentId, semester }));
   }
 
   async getResultBySession(studentId: string, session: string): Promise<any> {
-    return await firstValueFrom(this.client.send({ cmd: 'getResultBySession' }, { studentId, session }));
+    return await firstValueFrom(this.client2.send({ cmd: 'getResultBySession' }, { studentId, session }));
   }
 
   async getTranscript(studentId: string): Promise<any> {
-    return await firstValueFrom(this.client.send({ cmd: 'getTranscript' }, { studentId }));
+    return await firstValueFrom(this.client2.send({ cmd: 'getTranscript' }, { studentId }));
   }
 
   async processUploadedScores(filePath: string): Promise<any> {
@@ -67,7 +67,7 @@ export class StudentService {
 
     fs.unlinkSync(filePath);
 
-    return await firstValueFrom(this.client.send({ cmd: 'upload-results' }, scores));
+    return await firstValueFrom(this.client2.send({ cmd: 'upload-results' }, scores));
   }
 
   private parseCSV(csv: string): any[] {

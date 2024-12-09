@@ -9,7 +9,7 @@ export class PageClientService {
     constructor() {
       this.client = ClientProxyFactory.create({
         transport: Transport.TCP,
-        options: { host: 'localhost', port: 3013 },
+        options: { host: 'localhost', port: Number(`${process.env.PAGES_PORT_EXTERNAL}`)  },
       });
     }
 
