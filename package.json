@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "start:dev": "concurrently \"npm run start:dev --prefix admin\" \"npm run start:dev --prefix api-gateway\" \"npm run start:dev --prefix auth\" \"npm run start:dev --prefix contribute\" \"npm run start:dev --prefix group\" \"npm run start:dev --prefix hotgist\" \"npm run start:dev --prefix message\" \"npm run start:dev --prefix notification\" \"npm run start:dev --prefix otp\" \"npm run start:dev --prefix poll\" \"npm run start:dev --prefix comment\" \"npm run start:dev --prefix menu\" \"npm run start:dev --prefix page\"  \"npm run start:dev --prefix forms\" \"npm run start:dev --prefix email\"  \"npm run start:dev --prefix banking\""
+  },
+  "dependencies": {
+    "@nestjs/axios": "^3.1.1",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/microservices": "^10.4.3",
+    "@nestjs/mongoose": "^10.1.0",
+    "@nestjs/passport": "^10.0.3",
+    "axios": "^1.7.7",
+    "crypto-js": "^4.2.0",
+    "csv-parser": "^3.0.0",
+    "mongoose": "^8.8.3",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/passport-jwt": "^4.0.1",
+    "bcrypt": "^5.1.1",
+    "concurrently": "^9.0.1"
+  }
+}
