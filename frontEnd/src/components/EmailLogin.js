@@ -1,28 +1,45 @@
-// EmailPasswordLogin.js
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSuccess } from '../slices/authSlice';
 import useApi from '../hooks/useApi';
 import { submitForm } from '../api';
-import { Box, Input, Button, Text } from '@chakra-ui/react';
+import { Box, Input, Button, Text, useToast } from '@chakra-ui/react';
 
-const EmailPasswordLogin = ({config}) => {
-  const [username, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const EmailPasswordLogin = ({ config }) => {
+  const [username, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {  loading, error, execute: loginRequest } = useApi(submitForm);
+  const toast = useToast(); // Initialize the toast hook
+  const { loading, error, execute: loginRequest } = useApi(submitForm);
 
   const handleLogin = async () => {
-    const result = await loginRequest("auth/login",{ username, password });
-    console.log(result)
-    if (result) {
+    const result = await loginRequest('auth/login', { username, password });
+    console.log(result);
+
+    if (result.statusCode === 200) {
       const { access_token, user } = result;
       localStorage.setItem('token', access_token);
       dispatch(loginSuccess({ user, access_token }));
-      navigate('/dashboard'); 
-
+      toast({
+        title: 'Login Successful.',
+        description: 'You have been successfully logged in.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      });
+      navigate('/dashboard');
+    } else {
+      toast({
+        title: 'Login Failed.',
+        description: result.message || 'An error occurred during login.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      });
     }
   };
 
@@ -46,15 +63,18 @@ const EmailPasswordLogin = ({config}) => {
         onChange={(e) => setPassword(e.target.value)}
         my={3}
       />
-      <Box display={'flex'}  justifyContent={'center'} mb={5}>
-            <Button mt={2} 
-              bg={config.buttonColor}
-              color="white"
-              width="350px"
-              fontSize={14}
-               onClick={handleLogin} 
-               isLoading={loading}>
-              Login</Button>
+      <Box display={'flex'} justifyContent={'center'} mb={5}>
+        <Button
+          mt={2}
+          bg={config.buttonColor}
+          color="white"
+          width="350px"
+          fontSize={14}
+          onClick={handleLogin}
+          isLoading={loading}
+        >
+          Login
+        </Button>
       </Box>
       <Link to="/forgot-password">Forgot Password</Link>
     </Box>

@@ -79,39 +79,44 @@ export class AuthService {
   if (!user) {
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
+  console.log(user);
 
   const plainResetToken = this.generateResetToken();
   const hashedResetToken = crypto.createHash('sha256').update(plainResetToken).digest('hex');
   
   // Save hashed token and expiration to user record
-  
-  await this.userService.saveResetPasswordToken(user._id, hashedResetToken);
+  console.log("djd")
+  let done = await this.userService.saveResetPasswordToken(user._id, hashedResetToken);
 
   // Normally, send the plain token via email, not the hashed version
   // Example: await this.mailService.sendResetPasswordEmail(user.email, plainResetToken);
-
+  console.log("xx")
   return { resetToken: plainResetToken, data: user };
+
+
 }
 
   async resetPassword({ token, newPassword }: { token: string; newPassword: string }) {
     try {
       const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+      console.log(hashedToken)
       const user = await this.userService.findOneByResetPasswordToken(hashedToken);
-  
+      console.log(user.firstName)    
       if (!user || user.resetPasswordTokenExpiry < new Date()) {
-        throw new HttpException('Invalid or expired reset token', HttpStatus.BAD_REQUEST);
+        return { statusCode: 500, message: 'Invalid or expired reset token'}
       }
   
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await this.userService.updatePassword(user._id, hashedPassword);
-  
+      let update = await this.userService.updatePassword(user._id, hashedPassword);
+      
       // Clear reset token and expiry after password change
       await this.userService.clearResetPasswordToken(user._id);
   
       return { statusCode: 200, message: 'Password reset successfully', data: { email: user.email, firstName: user.firstName } };
     } catch (error) {
       console.error('Error during password reset:', error);
-      throw new HttpException('Invalid or expired reset token', HttpStatus.BAD_REQUEST);
+      return { statusCode: 500, message: 'Invalid or expired reset token'}
+  
     }
   }
   

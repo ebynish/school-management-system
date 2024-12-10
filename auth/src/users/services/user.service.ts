@@ -120,7 +120,7 @@ export class UserService {
       let update = await this.userModel.updateMany({_id: userId}, {
         resetPasswordToken: resetToken,
         resetPasswordExpires: Date.now() + 3600000 // 1 hour expiration
-    }).exec();
+    });
     console.log(update)
     } catch (error) {
       throw new InternalServerErrorException('Failed to save reset password token');

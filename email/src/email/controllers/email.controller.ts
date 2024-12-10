@@ -13,12 +13,12 @@ export class EmailController {
   @MessagePattern({ cmd: 'notification' })
   async handleMessage(@Payload() message: any): Promise<any> {
    
-    return await this.emailService.sendEmail(
+    await this.emailService.sendEmail(
       message?.data?.email,
       message?.data?.type,
       message.data,
     );
-    
+    return { statusCode: 200, message: 'Successful'}
   }
 
 

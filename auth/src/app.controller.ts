@@ -16,7 +16,7 @@ export class AuthController {
     
     
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      return { statusCode: 401, message:'Invalid credentials'};
     }
     return await this.authService.login(user);
   }

@@ -46,13 +46,15 @@ export class AuthClientService {
     const response = await firstValueFrom(
       this.client.send({ cmd: 'forgot-password' }, user)
     );
+
+    console.log(response.data)
       
     if (response.data){
       firstValueFrom(this.emailClient.send({ cmd: 'notification' }, { data: { email: response.data.email, firstName: response.data.firstName, type: 'forgot', resetLink: `/reset-password/${response.resetToken}` }}))
     }
     return { statusCode: 200, message: 'Reset token set to email'}
     }catch(e){
-      return { statusCode: 500, message: e}
+      return { statusCode: 500, message: e.message}
     }
   }
   
@@ -61,12 +63,12 @@ export class AuthClientService {
     const response = await firstValueFrom(
       this.client.send({ cmd: 'reset-password' }, user)
     );
-    
+    console.log(response.data)
     if (response.data)
-    await firstValueFrom(this.emailClient.send({ cmd: 'notification' }, {data:{ email: response.data.email, firstName: response.data.firstName, type: 'reset'}}))
+      firstValueFrom(this.emailClient.send({ cmd: 'notification' }, {data:{ email: response.data.email, firstName: response.data.firstName, type: 'reset'}}))
     return { statusCode: 200, message: 'Password reset successful'}
   }catch(e){
-    return { statusCode: 500, message: e}
+    return { statusCode: 500, message: e.message}
   }
   }
   async registerStudent(data:any): Promise<any>{

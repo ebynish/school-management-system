@@ -8,14 +8,23 @@ export class AuthClientController {
   constructor(private authService: AuthClientService) {}
 
   @Post('login')
-  async login(@Body() user: any) {
-    // try {
+  async login(@Body() user: any): Promise<any> {
+    try {
+      const result = await this.authService.login(user);
       
-    return await this.authService.login(user);
-    // }catch(e){
-    //   throw new Error(e.message)
-    // }
+      return {
+        statusCode: result.statusCode,
+        message: result.message,
+        data: result, // Encapsulating result for better structure
+      };
+    } catch (e) {
+      return {
+        statusCode: 500, // Use a status from the error if available
+        message: e.message || 'Internal Server Error',
+      };
+    }
   }
+
 
   @Post('register')
   async register(@Body() user: any) {
