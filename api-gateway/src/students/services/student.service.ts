@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as xlsx from 'xlsx';
+// import * as xlsx from 'xlsx';
 import * as fs from 'fs';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -53,21 +53,21 @@ export class StudentService {
   }
 
   async processUploadedScores(filePath: string): Promise<any> {
-    const fileExtension = filePath.split('.').pop();
-    let scores = [];
+    // const fileExtension = filePath.split('.').pop();
+    // let scores = [];
 
-    if (fileExtension === 'xlsx' || fileExtension === 'xls') {
-      const workbook = xlsx.readFile(filePath);
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      scores = xlsx.utils.sheet_to_json(sheet);
-    } else if (fileExtension === 'csv') {
-      const csv = fs.readFileSync(filePath, 'utf-8');
-      scores = this.parseCSV(csv);
-    }
+    // if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+    //   const workbook = xlsx.readFile(filePath);
+    //   const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    //   scores = xlsx.utils.sheet_to_json(sheet);
+    // } else if (fileExtension === 'csv') {
+    //   const csv = fs.readFileSync(filePath, 'utf-8');
+    //   scores = this.parseCSV(csv);
+    // }
 
-    fs.unlinkSync(filePath);
+    // fs.unlinkSync(filePath);
 
-    return await firstValueFrom(this.client2.send({ cmd: 'upload-results' }, scores));
+    // return await firstValueFrom(this.client2.send({ cmd: 'upload-results' }, scores));
   }
 
   private parseCSV(csv: string): any[] {

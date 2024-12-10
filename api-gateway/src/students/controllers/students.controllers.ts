@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Param, Body, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { StudentService } from '../services/student.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import * as multer from 'multer';
-import * as xlsx from 'xlsx';
+// import * as multer from 'multer';
+// import * as xlsx from 'xlsx';
 import { diskStorage } from 'multer';
 
 @Controller('students')
