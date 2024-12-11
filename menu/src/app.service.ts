@@ -77,7 +77,7 @@ export class AppService {
       throw new NotFoundException(`Menu with ID ${id} not found`);
     }
   }
-  async findAllByPermissions(permissions: string[]) {
+  async findAllByPermissions(permissions: any):Promise<any> {
     return this.menuModel.find().lean().exec().then((menus) => {
       return menus.map(menu => {
         // Filter subItems based on permissions
