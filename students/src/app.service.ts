@@ -1,4 +1,4 @@
-// src/services/Contribute.service.ts
+// src/services/forms.service.ts
 import { Injectable, NotFoundException, InternalServerErrorException, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -16,21 +16,21 @@ export class AppService {
     });
   }
   
-  // async getUserTimeline(userId: string, page: number = 1, limit: number = 10): Promise<Contribute[]> {
+  // async getUserTimeline(userId: string, page: number = 1, limit: number = 10): Promise<forms[]> {
   //   // Fetch followed user IDs
   //   let followedUserIds, contributions;
   //   if (userId)    
   //        followedUserIds =  await firstValueFrom(this.client.send({ cmd: 'get_followed_user_ids' }, userId));
     
   //   if (userId && followedUserIds.length > 0){    
-  //        contributions = await this.contributeModel.find({ userId: { $in: followedUserIds ? followedUserIds : [] } })
+  //        contributions = await this.formsModel.find({ userId: { $in: followedUserIds ? followedUserIds : [] } })
   //           .sort({ createdAt: -1 }) 
   //           .skip((page - 1) * limit)
   //           .limit(limit)
   //           .exec();
   //   } else {
-  //     contributions = await this.contributeModel.find({}).lean()
-  //     .sort({ createdAt: -1 }) 
+  //     contributions = await this.formsModel.find({}).lean()
+  //     .sort({ createdAt: -1 W}) 
   //     .skip((page - 1) * limit)
   //     .limit(limit)
   //     .exec();
@@ -49,12 +49,12 @@ export class AppService {
   // }
 
 
-  // async findContributes(limit: number = 10, lastContributeId?: string): Promise<Contribute[]> {
+  // async findformss(limit: number = 10, lastformsId?: string): Promise<forms[]> {
   //   try {
-  //     const query = lastContributeId ? { _id: { $gt: lastContributeId } } : {};
-  //     return await this.contributeModel.find(query).limit(limit).exec();
+  //     const query = lastformsId ? { _id: { $gt: lastformsId } } : {};
+  //     return await this.formsModel.find(query).limit(limit).exec();
   //   } catch (error) {
-  //     throw new InternalServerErrorException('Failed to retrieve Contributes');
+  //     throw new InternalServerErrorException('Failed to retrieve formss');
   //   }
   // }
  

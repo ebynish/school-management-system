@@ -88,7 +88,7 @@ const testimonialData = [
     image: 'images/adebowale_alumni.png',
     name: 'Mr. Fulani Anthony Adebowale',
     role: 'Alumni',
-    quote: `“Mr. Adebowale graduated 2008/2009 academic session. I thank God for the opportunity to pass through the University of Ibadan Distance learning Centre. I was a registered nurse as at the time I gained admission and I must confess that the most challenging aspect of the whole issue was combining education and work. But then the lectures that taught us contributed to my performance and success, they inspired and motivated me to start scoring high grades from my first year and build on whatever foundation I have laid till I graduate.”`,
+    quote: `“Mr. Adebowale graduated 2008/2009 academic session. I thank God for the opportunity to pass through the University of Ibadan Distance learning Centre. I was a registered nurse as at the time I gained admission and I must confess that the most challenging aspect of the whole issue was combining education and work. But then the lectures that taught us formsd to my performance and success, they inspired and motivated me to start scoring high grades from my first year and build on whatever foundation I have laid till I graduate.”`,
   },
   {
     image: 'images/afebabalola.png',
