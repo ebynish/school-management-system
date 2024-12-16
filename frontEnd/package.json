@@ -18,6 +18,7 @@
     "cross-spawn": "^7.0.6",
     "expressjs": "^1.0.1",
     "framer-motion": "^11.15.0",
+    "http-proxy-middleware": "^2.0.7",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "path-to-regexp": "^8.2.0",
