@@ -126,7 +126,7 @@ const Transcript = ({ config }) => {
   };
 
   return (
-    <Layout>
+    <Layout config={config}>
       <Box justifyContent={"flex-end"}>
         <Button onClick={handleOpenModal} bg={config?.buttonColor} color="white" w={200}>
           Apply for Transcript

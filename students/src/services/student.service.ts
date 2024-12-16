@@ -1,37 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Connection } from 'mongoose';
-import { Student, StudentDocument } from '../schemas/student.schema';
 import { Result, ResultDocument } from '../schemas/result.schema';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class StudentService {
+  private clientUser: ClientProxy
   private applicantsCollection;
   private gradePointsCollection;
+  private studentCollections;
 
   constructor(
-    @InjectModel(Student.name) private studentModel: Model<StudentDocument>,
     @InjectModel(Result.name) private resultModel: Model<ResultDocument>,
-    private readonly connection: Connection,
-    private readonly paymentService: any,
-    private clientUser: ClientProxy
+    @InjectConnection() private readonly connection: Connection
   ) {
     this.clientUser = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: 'localhost', port: Number(`${process.env.AUTH_PORT_EXTERNAL}`) },
+      options: { host: 'localhost', port: Number(process.env.AUTH_PORT_EXTERNAL) },
     });
 
-    // Access the "applicants" collection directly
+    // Access the "applicants", "grades", and "users" collections directly
     this.applicantsCollection = this.connection.collection('applicants');
-    // Access the "grades" collection directly
     this.gradePointsCollection = this.connection.collection('grades');
+    this.studentCollections = this.connection.collection('users');
   }
 
   // Fetch user data from another microservice
   async getUser(userId: any) {
-    return await firstValueFrom(this.clientUser.send({ cmd: 'find-user' }, userId));
+    try {
+      return await firstValueFrom(this.clientUser.send({ cmd: 'find-user' }, userId));
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw new Error('Failed to fetch user data');
+    }
   }
 
   // Create user in a separate service (e.g., Authentication service)
@@ -41,14 +44,14 @@ export class StudentService {
       return { statusCode: 200, message: 'User created successfully', data: result };
     } catch (error) {
       console.error('Error creating user:', error);
-      return { statusCode: 500, message: 'Failed to create user', error: error.message };
+      throw new Error('Failed to create user');
     }
   }
 
   // Generate matriculation number
   async generateMatricNumber(schoolCode: string, departmentCode: string, session: string): Promise<any> {
     try {
-      const lastStudent = await this.studentModel
+      const lastStudent = await this.studentCollections
         .findOne({ schoolCode, departmentCode, session })
         .sort({ matricNumber: -1 })
         .exec();
@@ -56,10 +59,14 @@ export class StudentService {
       let lastNumber = lastStudent ? parseInt(lastStudent.matricNumber.split('-')[3], 10) : 0;
       lastNumber += 1;
 
-      return { statusCode: 200, message: 'Matriculation number generated successfully', matricNumber: `${schoolCode}/${departmentCode}/${session}/${lastNumber.toString().padStart(4, '0')}` };
+      return {
+        statusCode: 200,
+        message: 'Matriculation number generated successfully',
+        matricNumber: `${schoolCode}/${departmentCode}/${session}/${lastNumber.toString().padStart(4, '0')}`,
+      };
     } catch (error) {
       console.error('Error generating matric number:', error);
-      return { statusCode: 500, message: 'Failed to generate matric number', error: error.message };
+      throw new Error('Failed to generate matric number');
     }
   }
 
@@ -86,7 +93,7 @@ export class StudentService {
       return newStudent;
     } catch (error) {
       console.error('Error creating student:', error);
-      return { statusCode: 500, message: 'Failed to create student', error: error.message };
+      throw new Error('Failed to create student');
     }
   }
 
@@ -123,40 +130,57 @@ export class StudentService {
       return { statusCode: 200, message: 'Student successfully created', student };
     } catch (error) {
       console.error('Error processing manual payment:', error);
-      return { statusCode: 500, message: 'Failed to process manual payment', error: error.message };
+      throw new Error('Failed to process manual payment');
     }
   }
 
-  // Determine grade and grade point based on score
   async determineGrade(score: number): Promise<any> {
-    let gradeScale = await this.gradePointsCollection.findOne({});
+    try {
+      const gradeScale = await this.gradePointsCollection.find({}).toArray();
+      console.log(score, "js");
+  
+      for (const scale of gradeScale) {
 
-    for (const scale of gradeScale) {
-      if (score >= scale.min && score <= scale.max) {
-        return { grade: scale.grade, gradePoint: scale.gradePoint };
+        let minScore = Number(scale.minScore);
+        let maxScore = Number(scale.maxScore);
+        let currentScore = Number(score);
+        console.log(minScore, maxScore, currentScore, gradeScale)
+        if (currentScore >= minScore && currentScore <= maxScore) {
+          return { grade: scale.grade, gradePoint: scale.gradePoint };
+        }
       }
+  
+      return { grade: 'F', gradePoint: 0.0 }; // Default to "F" if no match is found
+    } catch (error) {
+      console.error('Error determining grade:', error);
+      throw new Error('Failed to determine grade');
     }
-    return { grade: 'F', gradePoint: 0.0 }; // Default to "F" if no match is found
   }
+  
 
   // Add results for a student
-  async addResults(studentId: string, results: any[]): Promise<any> {
+  async addResults(data: any): Promise<any> {
     try {
-      const student = await this.studentModel.findById(studentId).exec();
-      if (!student) {
-        throw new Error('Student not found');
-      }
+    
+      let {extractedData, payload} = await data;
+     
+    let results = extractedData;
+
 
       // Process the results and determine grades asynchronously
       const newResults = await Promise.all(
         results.map(async (result) => {
+          const student = await this.studentCollections.findOne({ matricNumber: result.matricNumber });
+  
           const { grade, gradePoint } = await this.determineGrade(result.score); // Determine grade and grade point asynchronously
-          return {
-            ...result,
-            grade,
-            gradePoint,
-            studentId,
-          };
+          if (student)
+            return {
+              ...result,
+              grade,
+              gradePoint,
+              studentId: student?._id,
+              ...payload
+            };
         })
       );
 
@@ -166,14 +190,14 @@ export class StudentService {
       return { statusCode: 200, message: 'Results added successfully', results: newResults };
     } catch (error) {
       console.error('Error adding results:', error);
-      return { statusCode: 500, message: 'Failed to add results', error: error.message };
+      throw new Error('Failed to add results');
     }
   }
 
   // Get results for a student by semester
   async getResultBySemester(payload: any): Promise<any> {
     try {
-      let {studentId, semester} = payload;
+      let { studentId, semester } = payload;
       const results = await this.resultModel.find({ studentId, semester }).exec();
       if (results.length === 0) {
         return { statusCode: 404, message: 'No results found for this semester' };
@@ -182,28 +206,27 @@ export class StudentService {
       return { statusCode: 200, message: 'Results retrieved successfully', results };
     } catch (error) {
       console.error('Error retrieving results by semester:', error);
-      return { statusCode: 500, message: 'Failed to retrieve results by semester', error: error.message };
+      throw new Error('Failed to retrieve results by semester');
     }
   }
 
-    // Get results for a student by session
-    async getResultBySession(payload:any): Promise<any> {
-      try {
-        let {studentId, session} = payload;
-        const results = await this.resultModel.find({ studentId, session }).exec();
-        if (results.length === 0) {
-          return { statusCode: 404, message: 'No results found for this session' };
-        }
-
-        return { statusCode: 200, message: 'Results retrieved successfully', results };
-      } catch (error) {
-        console.error('Error retrieving results by session:', error);
-        return { statusCode: 500, message: 'Failed to retrieve results by session', error: error.message };
+  // Get results for a student by session
+  async getResultBySession(payload: any): Promise<any> {
+    try {
+      let { studentId, session } = payload;
+      const results = await this.resultModel.find({ studentId, session }).exec();
+      if (results.length === 0) {
+        return { statusCode: 404, message: 'No results found for this session' };
       }
-    }
 
-    // Get student's transcript (results grouped by semester)
-  // Get student's transcript (results grouped by semester and session)
+      return { statusCode: 200, message: 'Results retrieved successfully', results };
+    } catch (error) {
+      console.error('Error retrieving results by session:', error);
+      throw new Error('Failed to retrieve results by session');
+    }
+  }
+
+  // Get student's transcript (results grouped by semester)
   async getTranscript(studentId: string): Promise<any> {
     try {
       const results = await this.resultModel.find({ studentId }).exec();
@@ -215,101 +238,67 @@ export class StudentService {
       // Group results by session and semester
       const groupedResults = results.reduce((acc, result) => {
         const { semester, session } = result;
-
-        // Initialize session group if not exist
-        if (!acc[session]) {
-          acc[session] = {};
-        }
-
-        // Initialize semester group for each session if not exist
-        if (!acc[session][semester]) {
-          acc[session][semester] = [];
-        }
-
-        // Push the result to the appropriate session and semester group
+        if (!acc[session]) acc[session] = {};
+        if (!acc[session][semester]) acc[session][semester] = [];
         acc[session][semester].push(result);
         return acc;
       }, {});
 
-      // Calculate SGPA for each semester and CGPA for the entire period
-      let totalCreditPoints = 0;
-      let totalCreditUnits = 0;
-      let semesterResults = {};
+      // Calculate SGPA and CGPA for each session
+      const transcript = Object.keys(groupedResults).map((session) => {
+        const semesters = groupedResults[session];
+        let totalGradePoints = 0;
+        let totalUnits = 0;
 
-      // Calculate SGPA per semester and accumulate for CGPA
-      for (const session in groupedResults) {
-        for (const semester in groupedResults[session]) {
-          const semesterData = groupedResults[session][semester];
+        // Calculate SGPA for each semester
+        const sessions = Object.keys(semesters).map((semester) => {
+          const results = semesters[semester];
+          const semesterTotal = results.reduce(
+            (acc, result) => {
+              totalGradePoints += result.gradePoint * result.units;
+              totalUnits += result.units;
+              return acc + result.gradePoint * result.units;
+            },
+            0,
+          );
 
-          let semesterCreditPoints = 0;
-          let semesterCreditUnits = 0;
+          const sgpa = (semesterTotal / totalUnits).toFixed(2);
+          return { semester, results, sgpa };
+        });
 
-          // Calculate credit points and units for the current semester
-          semesterData.forEach((result) => {
-            semesterCreditPoints += result.gradePoint * result.creditUnits;
-            semesterCreditUnits += result.creditUnits;
-          });
+        const cgpa = (totalGradePoints / totalUnits).toFixed(2);
+        return { session, sessions, cgpa };
+      });
 
-          const semesterSGPA = semesterCreditUnits > 0
-            ? semesterCreditPoints / semesterCreditUnits
-            : 0;
-
-          // Store the semester SGPA
-          if (!semesterResults[session]) {
-            semesterResults[session] = {};
-          }
-          semesterResults[session][semester] = {
-            results: semesterData,
-            SGPA: semesterSGPA,
-          };
-
-          // Accumulate for total CGPA
-          totalCreditPoints += semesterCreditPoints;
-          totalCreditUnits += semesterCreditUnits;
-        }
-      }
-
-      // Calculate the total CGPA across all semesters and sessions
-      const totalCGPA = totalCreditUnits > 0 ? totalCreditPoints / totalCreditUnits : 0;
-
-      return {
-        statusCode: 200,
-        message: 'Transcript generated successfully',
-        transcript: semesterResults,
-        totalCGPA: totalCGPA.toFixed(2), // Return the CGPA with 2 decimal places
-      };
+      return { statusCode: 200, message: 'Transcript retrieved successfully', transcript };
     } catch (error) {
-      console.error('Error generating transcript:', error);
-      return { statusCode: 500, message: 'Failed to generate transcript', error: error.message };
+      console.error('Error retrieving transcript:', error);
+      throw new Error('Failed to retrieve transcript');
     }
-}
-
-  // Calculate CGPA for a student
+  }
   async calculateCGPA(studentId: string): Promise<any> {
     try {
       const results = await this.resultModel.find({ studentId }).exec();
+  
       if (results.length === 0) {
-        return { statusCode: 200, message: 'No results available', cgpa: 0 };
+        return { statusCode: 404, message: 'No results found for this student' };
       }
-
-      let totalCreditPoints = 0;
-      let totalCreditUnits = 0;
-
-      for (const result of results) {
-        totalCreditPoints += result.gradePoint * result.creditUnits;
-        totalCreditUnits += result.creditUnits;
-      }
-
-      const cgpa = totalCreditUnits > 0 ? totalCreditPoints / totalCreditUnits : 0;
-
-      return {
-        statusCode: 200,
-        message: 'CGPA calculated successfully',
-        cgpa,
-      };
+  
+      let totalGradePoints = 0;
+      let totalUnits = 0;
+  
+      results.forEach(result => {
+        totalGradePoints += result.gradePoint * result.creditUnits;
+        totalUnits += result.creditUnits;
+      });
+  
+      const cgpa = (totalGradePoints / totalUnits).toFixed(2);
+  
+      return { statusCode: 200, message: 'CGPA calculated successfully', cgpa };
     } catch (error) {
       console.error('Error calculating CGPA:', error);
-      return { statusCode: 500, message: 'Failed to calculate CGPA', error: error.message };
+      throw new Error('Failed to calculate CGPA');
     }
   }
+  
 }

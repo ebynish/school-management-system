@@ -10,8 +10,8 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
-
-const ContactUs = () => {
+import MainLayout from "../components/MainLayout";
+const ContactUs = ({config}) => {
   const toast = useToast();
 
   const handleSubmit = (e) => {
@@ -26,17 +26,16 @@ const ContactUs = () => {
   };
 
   return (
+    <MainLayout config={config}>
     <Box
       display="flex"
       flexDirection="column"
       alignItems="center"
-      justifyContent="center"
-      minH="100vh"
-      bg="gray.50"
-      px="4"
+      justifyContent="center"    
+      p="10"
     >
       <Box
-        maxW="600px"
+        maxW="550px"
         w="full"
         bg="white"
         p="8"
@@ -74,13 +73,13 @@ const ContactUs = () => {
             </FormControl>
 
             {/* Submit Button */}
-            <Button colorScheme="blue" type="submit" w="full">
+            <Button bg={config.buttonColor} color="white" type="submit" w="full">
               Send Message
             </Button>
           </VStack>
         </form>
       </Box>
-    </Box>
+    </Box></MainLayout>
   );
 };
 

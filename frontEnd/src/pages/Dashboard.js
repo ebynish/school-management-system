@@ -64,7 +64,7 @@ const Dashboard = ({config}) => {
       const response = await executePending(`check/find/registeredcourses/${user?._id}/userId`);
        if (response){
       // Filter registered courses based on user's semester
-           const filteredCoursesBySemester = response[0].selectedCourses?.filter(course => 
+           const filteredCoursesBySemester = response[0]?.selectedCourses?.filter(course => 
             String(course?.programmeId) === String(user?.programmeId) && 
             String(course?.departmentId) === String(user?.departmentId) && 
             String(course?.semesterId) === String(user?.semesterId)
@@ -107,7 +107,7 @@ const Dashboard = ({config}) => {
   };
 
   return (
-    <Layout>
+    <Layout config={config}>
       <Box>
         {/* Profile Section */}
         {isStudent && (

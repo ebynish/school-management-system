@@ -13,7 +13,7 @@ export class AuthClientController {
       const result = await this.authService.login(user);
       
       return {
-        statusCode: result.statusCode,
+        statusCode: result.statusCode || 200,
         message: result.message,
         data: result, // Encapsulating result for better structure
       };

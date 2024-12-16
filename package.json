@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start:dev": "concurrently  \"npm run start:dev --prefix api-gateway\" \"npm run start:dev --prefix auth\" \"npm run start:dev --prefix menu\" \"npm run start:dev --prefix page\"  \"npm run start:dev --prefix forms\" \"npm run start:dev --prefix email\" "
+    "start:dev": "concurrently  \"npm run start:dev --prefix api-gateway\" \"npm run start:dev --prefix auth\" \"npm run start:dev --prefix menu\" \"npm run start:dev --prefix page\"  \"npm run start:dev --prefix forms\" \"npm run start:dev --prefix email\" \"npm run start:dev --prefix students\" "
   },
   "dependencies": {
     "@nestjs/axios": "^3.1.1",

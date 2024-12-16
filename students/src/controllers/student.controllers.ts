@@ -12,45 +12,45 @@ export class StudentController {
 //     return { admissionLetter: letter };
 //   }
 
-//   @MessagePattern()
-//   async addResults(
-//     @Payload() payload:any){
-//     const response = await this.studentService.addResults(payload);
-//     return response;
-//   }
+@MessagePattern({ cmd: 'upload-results' })
+  async addResults(
+    @Payload() payload:any){
+    const response = await this.studentService.addResults(payload)
+    return response;
+  }
 
-  @MessagePattern()
+@MessagePattern({ cmd: 'get-result-by-semester' })
   async getResultBySemester(@Payload() payload:any) {
     const response = await this.studentService.getResultBySemester(payload);
     return response;
   }
 
   // Get results by session for a student
-  @MessagePattern()
+  @MessagePattern({ cmd: 'get-result-by-session' })
   async getResultBySession(
     @Payload() payload:any) {
     const response = await this.studentService.getResultBySession(payload);
     return response;
   }
 
-  @MessagePattern()
+  @MessagePattern({ cmd: 'get-transcript' })
   async getTranscript(@Payload() payload:any) {
     const response = await this.studentService.getTranscript(payload);
     return response;
   }
 
-  @MessagePattern()
-  async calculateCGPA(@Payload() payload:any) {
-    const response = await this.studentService.calculateCGPA(payload);
-    return response;
-  }
+  // @MessagePattern()
+  // async calculateCGPA(@Payload() payload:any) {
+  //   const response = await this.studentService.calculateCGPA(payload);
+  //   return response;
+  // }
 
-//   @MessagePattern()
-//   async getResults(@Payload() payload:any): Promise<any> {
-//     return await this.studentService.getResults(payload);
-//   }
+  // @MessagePattern({ cmd: 'create-form' })
+  // async getResults(@Payload() payload:any): Promise<any> {
+  //   return await this.studentService.getResults(payload);
+  // }
 
-  @MessagePattern()
+@MessagePattern({ cmd: 'get-cgpa' })
   async getCGPA(@Payload() payload:any): Promise<any> {
     const cgpa = await this.studentService.calculateCGPA(payload);
     return cgpa

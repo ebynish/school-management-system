@@ -150,7 +150,7 @@ const renderComponentByType = (component, searchResults, onSearch) => {
 };
 
 // Main Component
-const DataDisplayPage = () => {
+const DataDisplayPage = ({config}) => {
   const location = useLocation();
   const fullSlug = `/${location.pathname.slice(1)}`;
   const lastPart = location.pathname.split('/').pop().split('-').pop();
@@ -205,7 +205,7 @@ const DataDisplayPage = () => {
   if (loading) return <Spinner />;
 
   return (
-    <Layout>
+    <Layout config={config}>
       <Box p={5} width="100%">
         {data ? (
           <Box spacing={4}>

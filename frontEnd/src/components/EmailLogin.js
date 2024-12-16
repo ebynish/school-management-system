@@ -18,8 +18,8 @@ const EmailPasswordLogin = ({ config }) => {
     const result = await loginRequest('auth/login', { username, password });
     console.log(result);
 
-    if (result.statusCode === 200) {
-      const { access_token, user } = result;
+    if (result?.statusCode === 200) {
+      const { access_token, user } = result?.data;
       localStorage.setItem('token', access_token);
       dispatch(loginSuccess({ user, access_token }));
       toast({

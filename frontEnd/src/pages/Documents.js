@@ -26,7 +26,7 @@ import Layout from "../components/Layout";
 import useApi from "../hooks/useApi";
 import { fetchData } from "../api";
 import { useSelector } from "react-redux";
-const DocumentPage = () => {
+const DocumentPage = ({config}) => {
   const { data: documents, loading, error, execute } = useApi(fetchData);
   const [view, setView] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,7 +60,7 @@ const DocumentPage = () => {
   };
 
   return (
-    <Layout>
+    <Layout config={config}>
       <Box px={6}>
       <Flex justify="space-between" align="center" mb={5}>
             <Text fontSize="2xl" fontWeight="bold">

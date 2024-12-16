@@ -34,7 +34,12 @@ import Verify from './pages/Verify';
 import Transcript from './pages/Transcript';
 import ForgotPasswordPage from './pages/ForgotPassword';
 import ResetPasswordPage from './pages/ResetPassword';
-
+import ContactUs from './pages/ContactUs';
+import AboutUsPage from './pages/AboutUs';
+import ConfigForm from './pages/ConfigPage';
+import ResultUploadPage from './pages/ResultUpload';
+import ClearancePage from './pages/ClearancePage';
+import StudentProfile from './pages/StudentProfile';
 // Default configuration
 const defaultConfig = {
   "primaryColor": "#5c8018",
@@ -204,6 +209,7 @@ const App = () => {
             <Route path="/user-courses"  element={<ProtectedRoute element={<CourseRegistration config={finalConfig} />} />} />
             <Route path="/user-documents" element={<ProtectedRoute element={<DocumentPage config={finalConfig} />} />} />
             <Route path="/user-profile" element={<ProtectedRoute element={<ProfilePage config={finalConfig} />} />} />
+            <Route path="/user-profile/:id" element={<ProtectedRoute element={<StudentProfile config={finalConfig} />} />} />
             <Route path="/user-payments" element={<ProtectedRoute element={<PaymentPage config={finalConfig} />} />} />
             <Route path="/" element={<HomePage config={finalConfig} />} />
             <Route path="/user-transcripts" element={<ProtectedRoute element={<Transcript config={finalConfig} />} />} />
@@ -211,8 +217,13 @@ const App = () => {
             <Route path="/verify-result" element={<ProtectedRoute element={<Verify config={finalConfig} />} />} />
             <Route path="/latest-news" element={<NewsGrid config={finalConfig} />} />
             <Route path="/apply" element={<ApplyPage config={finalConfig} />} />
+            <Route path="/about-us" element={<AboutUsPage config={finalConfig} />} />
+            <Route path="/contact-us" element={<ContactUs config={finalConfig} />} />
             <Route path="/admission/status" element={<CheckAdmissionStatusPage config={finalConfig} />} />
             <Route path="/start" element={<StartPage config={finalConfig} />} />
+            <Route path="/configuration"  element={<ProtectedRoute element={<ConfigForm config={finalConfig} />} />} />
+            <Route path="/upload-results"  element={<ProtectedRoute element={<ResultUploadPage config={finalConfig} />} />} />
+            <Route path="/user-clearance"  element={<ProtectedRoute element={<ClearancePage config={finalConfig} />} />} />
             <Route path="/continue-application" element={<CompleteApplication config={finalConfig} />} />
             <Route path="/application-form/:id" element={<ApplicationPage config={finalConfig} />} />
             <Route path="/preview-form/:id" element={<ApplicationPage config={finalConfig} />} />

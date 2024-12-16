@@ -16,11 +16,12 @@ import {
 import { useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import useApi from "../hooks/useApi";
+import { submitForm } from "../api";
 
-const ProfilePage = () => {
+const ProfilePage = ({config}) => {
   const toast = useToast();
   const user = useSelector((state) => state.auth.user); // Assuming 'auth' slice in Redux
-  const { execute: changePassword } = useApi(); // Hook for API calls
+  const { execute: changePassword } = useApi(submitForm); // Hook for API calls
 
   // Local state for password fields
   const [oldPassword, setoldPassword] = useState("");
@@ -75,7 +76,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <Layout>
+    <Layout config={config}>
       <Box bg="white" p={8} borderRadius="md" shadow="lg" ml={5}>
         {/* Profile Header */}
         <Flex alignItems="center" mb={8}>

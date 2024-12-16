@@ -1,5 +1,5 @@
 {
-  "name": "pages",
+  "name": "student",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -29,10 +29,9 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.1.1",
     "dotenv": "^16.4.7",
-    "mongoose": "^8.7.2",
+    "mongoose": "^8.9.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
-    
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

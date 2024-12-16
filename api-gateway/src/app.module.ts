@@ -16,6 +16,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Config, ConfigSchema } from './config/schemas/config.schema';
 import { AuthClientService } from './auth/services/auth.service';
 import { ConfigModule } from '@nestjs/config';
+import { StudentService } from './students/services/student.service';
+import { StudentController } from './students/controllers/students.controllers';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { ConfigModule } from '@nestjs/config';
     secret: 'OK1', // Replace with environment variable in production
     signOptions: { expiresIn: '1h' },
   }), FormModule, AuthModule, UserModule, RoleModule,  MenuModule, PageModule, PermissionModule],
-  controllers: [AppController],
-  providers: [AppService, PageClientService, FormClientService, ConfigService, AuthClientService],
+  controllers: [AppController,StudentController],
+  providers: [AppService, PageClientService, FormClientService, ConfigService, AuthClientService, StudentService],
 })
 export class AppModule {}

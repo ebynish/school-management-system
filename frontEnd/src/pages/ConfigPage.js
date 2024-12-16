@@ -1,7 +1,8 @@
 import { Box, Button, FormLabel, Input, Textarea, Checkbox, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useState } from "react";
+import Layout from "../components/Layout";
 
-const ConfigForm = () => {
+const ConfigForm = ({config}) => {
   const [activeTab, setActiveTab] = useState('general');
   const [formData, setFormData] = useState({
     general: { siteName: '', siteUrl: '', adminEmail: '' },
@@ -31,8 +32,9 @@ const ConfigForm = () => {
   };
 
   return (
+    <Layout config={config}>
     <form>
-      <Tabs onChange={(index) => setActiveTab(Tabs[index].props.children)} variant="enclosed">
+      <Tabs onChange={(index) => setActiveTab(Tabs[index]?.props?.children)} variant="enclosed">
         <TabList>
           <Tab>General</Tab>
           <Tab>Payment</Tab>
@@ -110,6 +112,7 @@ const ConfigForm = () => {
 
       <Button type="submit" mt={4} colorScheme="blue">Save Configuration</Button>
     </form>
+    </Layout>
   );
 };
 

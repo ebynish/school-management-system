@@ -65,19 +65,30 @@ export class StudentController {
     const cgpa = await this.studentService.calculateCGPA(studentId);
     return { studentId, cgpa };
   }
+
   @Post('upload-scores')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads', // Directory to store the file
+        destination: './uploads',
         filename: (req, file, cb) => {
+          console.log(file)
           cb(null, `${Date.now()}-${file.originalname}`);
         },
       }),
     }),
   )
-  async uploadStudentScores(@UploadedFile() file: Express.Multer.File): Promise<any> {
-    // Process the file
-    return await this.studentService.processUploadedScores(file.path);
+  async uploadStudentScores(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { [key: string]: any }, // Handle additional form fields
+  ): Promise<any> {
+    
+    const { path, originalname } = file;
+    
+    // Process the file and additional form data
+    return await this.studentService.processUploadedScores(path, originalname, {
+      ...body
+    });
+
   }
 }

@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
-// import * as xlsx from 'xlsx';
+import * as csvParser from 'csv-parser';
+import * as ExcelJS from 'exceljs';
+
 import * as fs from 'fs';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -52,37 +54,70 @@ export class StudentService {
     return await firstValueFrom(this.client2.send({ cmd: 'getTranscript' }, { studentId }));
   }
 
-  async processUploadedScores(filePath: string): Promise<any> {
-    // const fileExtension = filePath.split('.').pop();
-    // let scores = [];
+  async processUploadedScores(path: string, originalname: string, payload:any): Promise<any> {
+    
+    let extractedData: any[];
 
-    // if (fileExtension === 'xlsx' || fileExtension === 'xls') {
-    //   const workbook = xlsx.readFile(filePath);
-    //   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    //   scores = xlsx.utils.sheet_to_json(sheet);
-    // } else if (fileExtension === 'csv') {
-    //   const csv = fs.readFileSync(filePath, 'utf-8');
-    //   scores = this.parseCSV(csv);
-    // }
+    if (originalname.endsWith('.xlsx')) {
+      // Process XLSX file dynamically
+      extractedData = await this.parseXlsxFile(path);
+    } else if (originalname.endsWith('.csv')) {
+      // Process CSV file dynamically
+      extractedData = await this.parseCsvFile(path);
+    } else {
+      throw new Error('Unsupported file format. Only .xlsx and .csv are allowed.');
+    }
 
-    // fs.unlinkSync(filePath);
-
-    // return await firstValueFrom(this.client2.send({ cmd: 'upload-results' }, scores));
+    
+    return await firstValueFrom(this.client2.send({ cmd: 'upload-results' }, {extractedData, payload}));
   }
 
-  private parseCSV(csv: string): any[] {
-    const lines = csv.split('\n');
-    const result = [];
-    const headers = lines[0].split(',');
+  private async parseXlsxFile(filePath: string): Promise<any[]> {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
+  
+    const worksheet = workbook.worksheets[0]; // Get the first sheet
+    const rows: any[] = [];
+    let headers: string[] = [];
+  
+    worksheet.eachRow((row, rowIndex) => {
+      // Convert `row.values` to a proper array and remove the first element (index column)
+      const rowValues = Array.isArray(row.values) ? row.values.slice(1) : Object.values(row.values).slice(1);
+  
+      if (rowIndex === 1) {
+        // First row contains headers
+        headers = rowValues as string[];
+      } else {
+        // Map the headers to the row values dynamically
+        const rowObject: { [key: string]: any } = {};
+        headers.forEach((header, index) => {
+          rowObject[header] = rowValues[index] ?? null;
+        });
+        rows.push(rowObject);
+      }
+    });
+  
+    return rows;
+  }
+  
 
-    for (let i = 1; i < lines.length; i++) {
-      const row = lines[i].split(',');
-      const obj: any = {};
-      headers.forEach((header, index) => {
-        obj[header.trim()] = row[index].trim();
-      });
-      result.push(obj);
-    }
-    return result;
+  private parseCsvFile(filePath: string): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const rows: any[] = [];
+      let headers: string[] = [];
+
+      fs.createReadStream(filePath)
+        .pipe(csvParser())
+        .on('headers', (headerRow) => {
+          headers = headerRow;
+        })
+        .on('data', (data) => {
+          rows.push(data);
+        })
+        .on('end', () => {
+          resolve(rows);
+        })
+        .on('error', (error) => reject(error));
+    });
   }
 }

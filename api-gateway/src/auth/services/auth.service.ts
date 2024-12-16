@@ -105,6 +105,7 @@ export class AuthClientService {
       programmeName: user?.programmeName,
       departmentCode: user?.courseCode,
       departmentName: user?.courseName,
+      level: user?.tempLevel,
       password: newMatricNumber,
       role: new mongoose.Types.ObjectId("658cb0e28f6a90879cb71f6f"),
       username: newMatricNumber

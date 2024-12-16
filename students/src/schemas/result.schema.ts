@@ -9,6 +9,21 @@ export class Result {
   studentId: Types.ObjectId; // Reference to the student
 
   @Prop({ required: true })
+  matricNumber: string; // Course code (e.g., "CSC301")
+
+  @Prop({})
+  sessionId: string; // Course code (e.g., "CSC301")
+
+  @Prop({})
+  semesterId: string; // Course code (e.g., "CSC301")
+
+  @Prop({})
+  departmentId: string; // Course code (e.g., "CSC301")
+
+  @Prop({})
+  levelId: string; // Course code (e.g., "CSC301")
+
+  @Prop({ required: true })
   courseCode: string; // Course code (e.g., "CSC301")
 
   @Prop({ required: true })
@@ -31,6 +46,9 @@ export class Result {
 
   @Prop({ required: true })
   session: string; // Academic session (e.g., "2023/2024")
+
+  @Prop({ required: true })
+  level: string; 
 
   @Prop({ default: Date.now })
   createdAt: Date; // Date the result was created

@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import AnnouncementBoard from "./AnnouncementBoard";
 
-const Layout = ({ children }) => {
+const Layout = ({ children, config }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const user = useSelector((state) => state.auth.user);
@@ -67,7 +67,7 @@ const Layout = ({ children }) => {
     <Flex direction="column" minH="100vh">
       {/* Sidebar */}
       <Flex>
-        <Sidebar isOpen={isSidebarOpen} onToggle={onToggleSidebar} />
+        <Sidebar isOpen={isSidebarOpen} onToggle={onToggleSidebar} config={config}/>
 
         {/* Main Content */}
         <Box

@@ -75,16 +75,16 @@ const CreateInvoicePage = ({ config }) => {
   return (
     <>
     { user ? 
-    <Layout>
+    <Layout config={config}>
     <Box p={2} className="invoice-container2"  >
     {/* Header Section with School Logo and Name */}
     <Flex align="center" mb={6} justify="space-between" justifyContent={'center'} alignContent={'center'}>
       <Box align="center">
         {/* School Logo */}
         <Image
-          src={config?.schoolLogo || "/logo.png"} // Default logo
+          src={config?.logoUrl || "/logo.png"} // Default logo
           alt="School Logo"
-          width={"100%"}
+          width={"400px"}
           objectFit="cover"
           mr={4}
         />
@@ -172,9 +172,9 @@ const CreateInvoicePage = ({ config }) => {
           <Box align="center">
             {/* School Logo */}
             <Image
-              src={userData?.schoolLogo || "/logo.png"} // Default logo
+              src={config?.logoUrl || "/logo.png"} // Default logo
               alt="School Logo"
-              width={"100%"}
+              width={"300px"}
               objectFit="cover"
               mr={4}
             />

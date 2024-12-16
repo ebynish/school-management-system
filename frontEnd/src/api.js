@@ -9,13 +9,17 @@ export const fetchData = (apiUrl, searchText, page, limit, token) =>
     },
   });
 
-export const submitForm = (apiUrl, formData, token) => 
-  fetch(`${API_BASE_URL}/${apiUrl}`, {
+export const submitForm = (apiUrl, formData, token) => {
+  
+  const isMultipart = formData instanceof FormData;
+  console.log(isMultipart)
+  return fetch(`${API_BASE_URL}/${apiUrl}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`, 
-        'Content-Type': 'application/json',
+        ...(isMultipart ? {} : { 'Content-Type': 'application/json' }), // Avoid manually setting 'Content-Type' for FormData
       },
-      body: JSON.stringify(formData),
-  });  
+      body: isMultipart ? formData : JSON.stringify(formData),
+    });
   
+}

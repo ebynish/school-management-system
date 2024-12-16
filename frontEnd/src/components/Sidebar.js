@@ -41,7 +41,7 @@ import { fetchData } from "../api";
 import useApi from "../hooks/useApi";
 import { useSelector } from "react-redux";
 
-const Sidebar = ({ isOpen, onToggle }) => {
+const Sidebar = ({ isOpen, onToggle, config }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [expandedMenu, setExpandedMenu] = useState(null); // Track the currently expanded menu
   const sidebarWidth = useBreakpointValue({
@@ -93,7 +93,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
         right="-0px"
       />
       <VStack align="stretch" spacing={4}>
-        <Header />
+        <Header config={config}/>
         <Divider mt={2} />
         {menuItems?.map((menu) => {
           const isMenuVisible = menu?.permissions?.some((permission) =>

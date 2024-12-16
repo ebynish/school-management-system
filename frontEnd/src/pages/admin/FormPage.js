@@ -5,7 +5,7 @@ import useApi from "../../hooks/useApi";
 import { fetchData } from "../../api"; 
 import { useParams } from "react-router-dom"; 
 import Layout from "../../components/Layout";
-const FormPage = () => {
+const FormPage = ({config}) => {
     const { id } = useParams();
     
   const [isSubmitting, setIsSubmitting] = useState(false); 
@@ -24,7 +24,7 @@ const FormPage = () => {
 
   
   return (
-    <Layout>
+    <Layout config={config}>
       
     <Flex direction="column" flex={1} p={5}>
 

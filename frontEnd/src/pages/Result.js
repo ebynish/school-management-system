@@ -134,7 +134,7 @@ const Results = ({ config }) => {
     matricNumber: user?.matricNumber,
     email: user?.email,
     phone: user?.phone,
-    schoolLogo: config?.logUrl,
+    schoolLogo: config?.logoUrl,
     programme: user?.programmeName,
     department: user?.departmentName,
     session: user?.session,
@@ -144,7 +144,7 @@ const Results = ({ config }) => {
   };
 
   return (
-    <Layout>
+    <Layout config={config}>
       {showPrintableForm ? (
         <PrintableCourseForm userData={userData} />
       ) : (

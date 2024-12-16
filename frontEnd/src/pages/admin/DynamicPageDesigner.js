@@ -62,7 +62,7 @@ const componentTypes = [
   'types'
 ];
 
-const DynamicPageDesigner = () => {
+const DynamicPageDesigner = ({config}) => {
   const [components, setComponents] = useState([]);
   const [selectedComponentType, setSelectedComponentType] = useState('');
 
@@ -108,7 +108,7 @@ const DynamicPageDesigner = () => {
   };
 
   return (
-    <Layout>
+    <Layout config={config}>
       <VStack spacing={4}>
         <Select 
           placeholder="Select component type"

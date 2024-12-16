@@ -67,7 +67,7 @@ const FeeCard = ({ fee }) => {
     </Box>
   );
 };
-const PaymentPage = () => {
+const PaymentPage = ({config}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const { data: fees, loading, error, execute } = useApi(fetchData);
@@ -152,7 +152,7 @@ const PaymentPage = () => {
 
 
   return (
-    <Layout>
+    <Layout config={config}>
        <Flex justify="space-between" align="center" mb={5}>
             <Text fontSize="2xl" fontWeight="bold">
               {user.session} Session

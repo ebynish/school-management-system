@@ -1,0 +1,9 @@
+matricNumber,courseCode,courseTitle,creditUnits,level,semester,session,score
+BENG/EE/25/0000001,CSC101,Introduction to Computer Science,3,100,Semester 1,2023/2024,85
+BENG/EE/25/0000001,MTH102,Calculus I,4,100,Semester 1,2023/2024,78
+BENG/EE/25/0000001,PHY103,General Physics I,3,100,Semester 1,2023/2024,92
+BENG/EE/25/0000001,CHM101,General Chemistry,3,100,Semester 1,2023/2024,80
+BENG/EE/25/0000001,ENG101,Communication Skills,2,100,Semester 1,2023/2024,88
+BENG/EE/25/0000001,CSC102,Introduction to Programming,3,100,Semester 2,2023/2024,90
+BENG/EE/25/0000001,MTH104,Statistics,3,100,Semester 2,2023/2024,76
+BENG/EE/25/0000001,PHY104,General Physics II,3,100,Semester 2,2023/2024,83

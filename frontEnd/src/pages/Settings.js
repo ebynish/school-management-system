@@ -6,7 +6,7 @@ import {
 import { useTheme as useCustomTheme } from '../themeProvider';
 import Layout from '../components/Layout';
 
-const SettingsPage = () => {
+const SettingsPage = ({config}) => {
   const { setThemeColors } = useCustomTheme();
   
   const [selectedTab, setSelectedTab] = useState(0);
@@ -21,7 +21,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <Layout trending="none">
+    <Layout trending="none" config={config}>
       <Flex maxW="100%" p={4}>
         {/* Side Tabs */}
         <Box width="30%" borderRightWidth={1} pr={4}>

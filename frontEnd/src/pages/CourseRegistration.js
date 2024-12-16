@@ -150,7 +150,7 @@ const CourseRegistration = ({ config }) => {
   };
  
   return (
-    <Layout>
+    <Layout config={config}>
       {showPrintableForm ? (
         <PrintableCourseForm userData={userData} />
       ) : (
